@@ -1,0 +1,3 @@
+[submodule "docker/wait-for"]
+	path = docker/wait-for
+	url = https://github.com/Eficode/wait-for

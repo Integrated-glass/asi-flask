@@ -1,0 +1,73 @@
+version: "3.7"
+
+services:
+  ustart-flask-app:
+    depends_on:
+      - ustart-db
+    build:
+      context: ../
+      dockerfile: docker/ustart-flask-environment.dockerfile
+      cache_from:
+        - python:alpine
+        - ustart-flask-environment
+    image: ustart-flask-environment
+    container_name: ustart-flask-app
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # App environment variables
+      LIBR_DB_LOGIN: "${LIBR_DB_LOGIN}"
+      LIBR_DB_PASSWORD: "${LIBR_DB_PASSWORD}"
+      LIBR_DB_NAME: "${LIBR_DB_NAME}"
+      DATABASE_URL: "postgresql://${LIBR_DB_LOGIN}:${LIBR_DB_PASSWORD}@ustart-db:5432/${LIBR_DB_NAME}"
+    networks:
+      - default
+    ports:
+      - "$LIBR_HOST_SERVE_PORT:$LIBR_SERVE_PORT"
+    volumes:
+      - ../src:/ustart # app's source code
+      - "$LIBR_LOGS_FOLDER:/ustart-logs" # server's logs
+      - ./wait-for:/wait-for # wait-for script
+    working_dir: /ustart
+    entrypoint:
+      - ../wait-for/wait-for
+      - ustart-db:5432
+      - --
+
+      - gunicorn
+
+      - --access-logfile
+      - /ustart-logs/$LIBR_ACCESS_LOGFILE
+
+      - --error-logfile
+      - /ustart-logs/$LIBR_ERROR_LOGFILE
+
+      - -w
+      - $LIBR_NUM_WORKERS
+
+      - -b
+      - 0.0.0.0:$LIBR_SERVE_PORT
+
+      - app:app
+
+  ustart-db:
+    image: postgres:12-alpine
+    container_name: ustart-db
+    restart: unless-stopped
+    volumes:
+      - "$LIBR_DB_DIR:/var/lib/postgresql/data"
+    env_file: .env
+    environment:
+      POSTGRES_USER: "$LIBR_DB_LOGIN"
+      POSTGRES_PASSWORD: "$LIBR_DB_PASSWORD"
+      POSTGRES_DB: "$LIBR_DB_NAME"
+      PGDATA: "/var/lib/postgresql/data"
+    networks:
+      - default
+    expose:
+      - "5432"
+
+
+networks:
+  default:
+    driver: bridge

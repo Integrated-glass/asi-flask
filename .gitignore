@@ -1,0 +1,15 @@
+# Exclude
+requests/
+logs/
+migrations/
+db_data/
+
+# Always include
+
+
+# Always exclude
+.idea
+
+__pycache__/
+*.pyc
+venv/
