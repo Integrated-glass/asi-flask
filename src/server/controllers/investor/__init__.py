@@ -54,6 +54,19 @@ def get_by_id(investor_id):
   }
 
 
+@investorMod.route("/getAll", methods=["GET"])
+def get_all_investors():
+  ids = db.session.execute("""
+    select id from investor
+  """).fetchall()
+
+  result = []
+  for x in ids:
+    id = x[0]
+    result.append(get_by_id(id))
+
+  return jsonify(result)
+
 @investorMod.route("", methods=["POST"])
 # @jwt_required
 def get_by_interests():
