@@ -127,8 +127,8 @@ def _investor_tags_reducer(running, cur):
 
   if existing:
     existing[0]["tags"].append({
-      "TagID": cur["TagID"],
-      "tag_name": cur["tag_name"],
+      "TagID": cur["tags"][0]["TagID"],
+      "tag_name": cur["tags"][0]["tag_name"],
     })
 
     return running
