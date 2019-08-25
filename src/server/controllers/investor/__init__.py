@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+
 investorMod = Blueprint("investor", __name__, url_prefix="/investor")
 
 from functools import reduce
@@ -13,39 +14,39 @@ from server.common.utils.conversion import tuple_with_decimal_to_double
 # @jwt_required
 def get_by_id(investor_id):
   investor_info = db.session.execute(
-      """
-      select i.name, i.link, i.bio, i.min_investment, i.max_investment, i.maximal_historical_investment, i.avatar
-      from public.investor as i
-      where i.id = :investor_id;
-      """,
-      {
-        "investor_id": investor_id
-      }
-    )
+    """
+    select i.name, i.link, i.bio, i.min_investment, i.max_investment, i.maximal_historical_investment, i.avatar
+    from public.investor as i
+    where i.id = :investor_id;
+    """,
+    {
+      "investor_id": investor_id
+    }
+  )
 
   investor_history = db.session.execute(
-      """
-      select iih.project_name, iih.link, iih.money_invested
-      from public.investor_investment_history as iih
-      where iih.investor_id = :investor_id;
-      """,
-      {
-        "investor_id": investor_id
-      }
-    )
+    """
+    select iih.project_name, iih.link, iih.money_invested
+    from public.investor_investment_history as iih
+    where iih.investor_id = :investor_id;
+    """,
+    {
+      "investor_id": investor_id
+    }
+  )
 
   investor_tags = db.session.execute(
-      """
-      select t.id as tag_id, t.name
-      from public.investor_tag as it
-      join public.tag as t
-        on it."TagID" = t.id
-      where it."InvestorID" = :investor_id;
-      """,
-      {
-        "investor_id": investor_id
-      }
-    )
+    """
+    select t.id as tag_id, t.name
+    from public.investor_tag as it
+    join public.tag as t
+      on it."TagID" = t.id
+    where it."InvestorID" = :investor_id;
+    """,
+    {
+      "investor_id": investor_id
+    }
+  )
 
   return {
     "investor": dict(zip(investor_info.keys(), tuple_with_decimal_to_double(investor_info.first()))),
@@ -67,20 +68,21 @@ def get_all_investors():
 
   return jsonify(result)
 
-@investorMod.route("", methods=["POST"])
+
+@investorMod.route("", methods=["GET"])
 # @jwt_required
 def get_by_interests():
-  tag_ids = list(map(int, request.form.getlist("tags")))
+  tag_ids = list(map(int, request.args.getlist("tags")))
   investors_tags = db.session.execute(
-      """
-      select i.id as investor_id, i.name as investor_name, i.min_investment, i.max_investment, i.avatar, it."TagID", t.name as tag_name
-      from public.investor as i
-      left join public.investor_tag as it
-        on i.id = it."InvestorID"
-      left join public.tag as t
-        on t.id = it."TagID"
-      """
-    )
+    """
+    select i.id as investor_id, i.name as investor_name, i.min_investment, i.max_investment, i.avatar, it."TagID", t.name as tag_name
+    from public.investor as i
+    left join public.investor_tag as it
+      on i.id = it."InvestorID"
+    left join public.tag as t
+      on t.id = it."TagID"
+    """
+  )
 
   investors_tags = list(
     map(
