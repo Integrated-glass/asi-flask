@@ -55,7 +55,15 @@ def get_by_tags():
 @startup.route("/get/{id:int}")
 def get_by_id(id: int):
   result = db.session.execute("""
-    select id, name, description, logo, money_requirement from startup where id = :id
+   select e.first_name, e.last_name, e.patronymic, e.bio, d.document_name, d.file, 
+   s.id, s.name,s.description, s.logo, s.money_requirement
+  from startup as s
+  join entrepreneur as e
+    on s.owner_id = e.id
+  join document as d
+    on d.id = s.document_id
+  where s.id = :startup_id
+    and d.type = 'Business plan'
   """, {"id": id}).first()
   res = dict(zip(result.keys(), result))
   res.update({"money_requirement": float(res["money_requirement"])})
