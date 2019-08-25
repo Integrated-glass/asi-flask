@@ -44,7 +44,6 @@
       "name": "Python: Flask (quick reload, no debug)",
       "type": "python",
       "request": "launch",
-      "preLaunchTask": "Start postgres in Docker",
       "module": "flask",
       "env": {
         "FLASK_APP": "src/app.py",
@@ -61,7 +60,6 @@
       "name": "Python: Flask (debug, no quick reload)",
       "type": "python",
       "request": "launch",
-      "preLaunchTask": "Start postgres in Docker",
       "module": "flask",
       "env": {
         "FLASK_APP": "src/app.py",

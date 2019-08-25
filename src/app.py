@@ -19,12 +19,16 @@ jwt = JWTManager(app)
 
 # Registring blueprints (modules)
 from server.controllers.auth import auth
-from server.controllers.startup import startup
-from server.controllers.tags import tag
-
 app.register_blueprint(auth)
+
+from server.controllers.startup import startup
 app.register_blueprint(startup)
+
+from server.controllers.tags import tag
 app.register_blueprint(tag)
+
+from server.controllers.investor import investorMod
+app.register_blueprint(investorMod)
 
 # from flask_migrate import Migrate, init as db_init, migrate as db_migrate, upgrade as db_upgrade
 
