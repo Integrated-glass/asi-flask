@@ -56,37 +56,45 @@ def get_by_tags():
 def get_by_id(id):
   id = int(id)
   result = db.session.execute("""
-   select e.first_name, e.last_name, e.patronymic, e.bio, e.id, d.document_name, d.file, d.id ,
-   s.id, s.name,s.description, s.logo, s.money_requirement
+  select e.first_name, e.last_name, e.patronymic, e.bio, e.id as enterpreneur_id, d.document_name, d.file, d.id as document_id,
+         s.id as startup_id, s.name as startup_name, s.description, s.logo, s.money_requirement, t.id as tag_id, t.name as tag_name
   from startup as s
   join entrepreneur as e
     on s.owner_id = e.id
   join document as d
     on d.id = s.document_id
+  left join startup_tag as st 
+    on s.id = st."StartupID"
+  left join tag as t
+    on st."TagID" = t.id
   where s.id = :startup_id
-    and d.type = 'Business plan'
-  """, {"startup_id": id}).first()
-  res = {
-    "owner": {
-      "first_name": result[0],
-      "last_name": result[1],
-      "patronymic": result[2],
-      "bio": result[3],
-      "id": result[4]
-    },
-    "document": {
-      "name": result[5],
-      "link": result[6],
-      "id": result[7]
-    },
-    "startup": {
-      "id": result[8],
-      "name": result[9],
-      "description": result[10],
-      "logo": result[11],
-      "money_requirement": float(result[12])
+    and (d.type = 'Business plan' or d.type is null);
+  """, {"startup_id": id}).fetchall()
+
+  if result:
+    res = {
+      "owner": {
+        "first_name": result[0][0],
+        "last_name": result[0][1],
+        "patronymic": result[0][2],
+        "bio": result[0][3],
+        "id": result[0][4]
+      },
+      "document": {
+        "name": result[0][5],
+        "link": result[0][6],
+        "id": result[0][7]
+      },
+      "startup": {
+        "id": result[0][8],
+        "name": result[0][9],
+        "description": result[0][10],
+        "logo": result[0][11],
+        "money_requirement": float(result[0][12])
+      },
+      "tags": [{"tag_id": r[13], "tag_name": r[14]} for r in result]
     }
-  }
-  res = dict(zip(result.keys(), result))
-  res.update({"money_requirement": float(res["money_requirement"])})
+  else:
+    res = {}
+
   return jsonify(res)
