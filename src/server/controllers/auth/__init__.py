@@ -59,12 +59,13 @@ def registration_finish():
     link = data['link']
     min_investment = data['min_investment']
     max_investment = data['max_investment']
+    bio = data['bio']
 
     db.session.execute("""
       insert into public.investor (name, link, min_investment, max_investment, user_id) VALUES 
       (:name, :link, :min_investment, :max_investment, :user_id)
     """, {"name": name, "link": link, "min_investment": min_investment, "max_investment": max_investment,
-          "user_id": user_id})
+          "user_id": user_id, "bio":bio})
 
   db.session.commit()
   jti = get_raw_jwt()['jti']  # revoking current token
@@ -80,7 +81,7 @@ def registration_finish():
 
 @auth.route("/login", methods=["POST"])
 def login():
-  data = request.data
+  data = request.json
   email = data["email"]
   hashed_password = data["password"]
   role = data["role"]
