@@ -104,6 +104,8 @@ CREATE TABLE "public"."investment" (
     "link" character varying,
     "min_money" numeric,
     "max_money" numeric,
+	"logo"character varying,
+	"type" character varying,
     CONSTRAINT "investment_pkey" PRIMARY KEY ("id")
 ) WITH (oids = false);
 -------------------------------------------------------------------------------

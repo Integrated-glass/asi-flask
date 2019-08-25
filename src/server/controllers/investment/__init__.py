@@ -14,7 +14,7 @@ import datetime
 @investment.route("/getAll", methods=["GET"])
 def get_all_investments():
   investments = db.session.execute("""
-    select id, name, description, start_date, end_date, link, min_money, max_money from investment
+    select id, name, description, start_date, end_date, link, min_money, max_money, logo, type from investment
   """).fetchall()
   result = []
   for x in investments:
@@ -23,7 +23,8 @@ def get_all_investments():
       "min_money": float(program["min_money"]),
       "max_money": float(program["max_money"]),
       "start_date": program["start_date"].strftime('%Y-%m-%d'),
-      "end_date": program["end_date"].strftime('%Y-%m-%d')
+      "end_date": program["end_date"].strftime('%Y-%m-%d'),
+      "type": {"government": "Государственный", "private": "Частный"}[program["type"]]
     })
 
     result.append(program)
