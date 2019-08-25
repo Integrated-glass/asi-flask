@@ -84,7 +84,7 @@ def get_by_id(id):
       "name": result[9],
       "description": result[10],
       "logo": result[11],
-      "money_requirement": float(result[11])
+      "money_requirement": float(result[12])
     }
   }
   res = dict(zip(result.keys(), result))
