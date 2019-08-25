@@ -52,10 +52,11 @@ def get_by_tags():
   return jsonify(result)
 
 
-@startup.route("/get/{id:int}")
-def get_by_id(id: int):
+@startup.route("/get/<id>")
+def get_by_id(id):
+  id = int(id)
   result = db.session.execute("""
-   select e.first_name, e.last_name, e.patronymic, e.bio, d.document_name, d.file, 
+   select e.first_name, e.last_name, e.patronymic, e.bio, e.id, d.document_name, d.file, d.id ,
    s.id, s.name,s.description, s.logo, s.money_requirement
   from startup as s
   join entrepreneur as e
@@ -64,7 +65,28 @@ def get_by_id(id: int):
     on d.id = s.document_id
   where s.id = :startup_id
     and d.type = 'Business plan'
-  """, {"id": id}).first()
+  """, {"startup_id": id}).first()
+  res = {
+    "owner": {
+      "first_name": result[0],
+      "last_name": result[1],
+      "patronymic": result[2],
+      "bio": result[3],
+      "id": result[4]
+    },
+    "document": {
+      "name": result[5],
+      "link": result[6],
+      "id": result[7]
+    },
+    "startup": {
+      "id": result[8],
+      "name": result[9],
+      "description": result[10],
+      "logo": result[11],
+      "money_requirement": float(result[11])
+    }
+  }
   res = dict(zip(result.keys(), result))
   res.update({"money_requirement": float(res["money_requirement"])})
-  return jsonify()
+  return jsonify(res)
