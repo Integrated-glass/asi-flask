@@ -2,13 +2,15 @@ from flask import Blueprint, render_template, request, jsonify
 from flask_jwt_extended import (
   jwt_required, create_access_token, get_jwt_identity, get_raw_jwt, create_refresh_token, jwt_refresh_token_required
 )
+import logging
 
 from app import db, jwt
 
 auth = Blueprint("auth", __name__, url_prefix="/auth")
 
 blacklist = set()
-
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
@@ -82,6 +84,7 @@ def registration_finish():
 @auth.route("/login", methods=["POST"])
 def login():
   data = request.json
+  logging.debug(f"Got request on login with body {data}")
   email = data["email"]
   hashed_password = data["password"]
   role = data["role"]
