@@ -42,11 +42,13 @@ def get_by_tags():
   """, {"tags": tags}).fetchall()
   result = []
   for x in data:
-    l = list(x)
-    for y in range(len(x)):
-      if isinstance(l[y], Decimal):
-        l[y] = float(l[y])
-    result.append( data(zip(x.keys(), l)))
+    result.append({
+      "id": x[0],
+      "name": x[1],
+      "description": x[2],
+      "logo": x[3],
+      "money_requirement": float(x[4])
+    })
   return jsonify(result)
 
 
