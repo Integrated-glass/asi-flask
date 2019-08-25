@@ -8,6 +8,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import request, jsonify
 from app import db, jwt
 from server.common.utils.conversion import tuple_with_decimal_to_double
+import datetime
 
 
 @investment.route("/getAll", methods=["GET"])
@@ -20,7 +21,9 @@ def get_all_investments():
     program = dict(zip(x.keys(), x))
     program.update({
       "min_money": float(program["min_money"]),
-      "max_money": float(program["max_money"])
+      "max_money": float(program["max_money"]),
+      "start_date": program["start_date"].strftime('%Y-%m-%d'),
+      "end_date": program["end_date"].strftime('%Y-%m-%d')
     })
 
     result.append(program)
