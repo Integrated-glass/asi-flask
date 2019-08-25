@@ -12,6 +12,7 @@ blacklist = set()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
   jti = decrypted_token['jti']
@@ -67,7 +68,7 @@ def registration_finish():
       insert into public.investor (name, link, min_investment, max_investment, user_id) VALUES 
       (:name, :link, :min_investment, :max_investment, :user_id)
     """, {"name": name, "link": link, "min_investment": min_investment, "max_investment": max_investment,
-          "user_id": user_id, "bio":bio})
+          "user_id": user_id, "bio": bio})
 
   db.session.commit()
   jti = get_raw_jwt()['jti']  # revoking current token

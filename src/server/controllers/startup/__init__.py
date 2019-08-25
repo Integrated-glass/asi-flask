@@ -28,7 +28,7 @@ def get_all_startups():
           on t.id = st."TagID"
       where s.id = :startup_id;
     """, {"startup_id": x[0]}).fetchall()
-    startup_description.update({"tags": [dict(zip(y.keys(), y)) for y in tags]})
+    startup_description.update({"tags": [dict(zip(y.keys(), y)) for y in tags], "id": x[0]})
     result.append(startup_description)
   return jsonify(result)
 
