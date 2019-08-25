@@ -18,7 +18,7 @@ def get_all_startups():
   """).fetchall()
   result = []
   for x in data:
-    startup_description = {"name": x[1], "description": x[2], "logo": x[3], "money_requirement": x[4]}
+    startup_description = {"name": x[1], "description": x[2], "logo": x[3], "money_requirement": float(x[4])}
     tags = db.session.execute("""
       select t.id, t.name
       from public.startup as s
@@ -57,4 +57,6 @@ def get_by_id(id: int):
   result = db.session.execute("""
     select id, name, description, logo, money_requirement from startup where id = :id
   """, {"id": id}).first()
-  return jsonify(dict(zip(result.keys(), result)))
+  res = dict(zip(result.keys(), result))
+  res.update({"money_requirement": float(res["money_requirement"])})
+  return jsonify()
