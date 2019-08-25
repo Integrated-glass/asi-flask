@@ -84,7 +84,7 @@ def registration_finish():
 @auth.route("/login", methods=["POST"])
 def login():
   data = request.json
-  logging.debug(f"Got request on login with body {data}")
+  logging.error(f"Got request on login with body {data}")
   email = data["email"]
   hashed_password = data["password"]
   role = data["role"]
