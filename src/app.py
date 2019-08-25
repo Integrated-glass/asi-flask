@@ -1,8 +1,10 @@
 # Creating the app
 from flask import Flask
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # Config app
 from server.common.config import ProductionConfig as ConfigObject
