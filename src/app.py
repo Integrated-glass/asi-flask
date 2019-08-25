@@ -1,23 +1,30 @@
 # Creating the app
 from flask import Flask
+from flask_jwt_extended import JWTManager
+
 app = Flask(__name__)
 
 # Config app
-from server.common.confing import ProductionConfig as ConfigObject
-app.config.from_object(ConfigObject)
+from server.common.config import ProductionConfig as ConfigObject
 
-# Registring blueprints (modules)
-from server.controllers.test import testMod
-app.register_blueprint(testMod)
+app.config.from_object(ConfigObject)
 
 # DB part
 from flask_sqlalchemy import SQLAlchemy
+
 db = SQLAlchemy(app)
+jwt = JWTManager(app)
 
-from flask_migrate import Migrate, init as db_init, migrate as db_migrate, upgrade as db_upgrade
-migrate = Migrate(app, db)
+# Registring blueprints (modules)
+from server.controllers.auth import auth
 
-import server.models
+app.register_blueprint(auth)
+
+# from flask_migrate import Migrate, init as db_init, migrate as db_migrate, upgrade as db_upgrade
+
+# migrate = Migrate(app, db)
+
+# import server.models
 
 # Migrate
 # import os.path
