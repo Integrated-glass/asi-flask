@@ -4,6 +4,7 @@ from flask_jwt_extended import (
 )
 
 from typing import List
+from decimal import Decimal
 
 from app import db, jwt
 
@@ -39,7 +40,14 @@ def get_by_tags():
     select id, name, description, logo, "money_requirement" from startup where 
     "id"=(select "StartupID" from startup_tag where "TagID" in :tags)
   """, {"tags": tags}).fetchall()
-  return jsonify([dict(zip(x.keys(), x)) for x in data])
+  result = []
+  for x in data:
+    l = list(x)
+    for y in range(len(x)):
+      if isinstance(l[y], Decimal):
+        l[y] = float(l[y])
+    result.append( data(zip(x.keys(), l)))
+  return jsonify(result)
 
 
 @startup.route("/get/{id:int}")
